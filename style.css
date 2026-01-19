@@ -1,0 +1,28 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Indie Flower", cursive;
+  font-weight: 600;
+  font-style:normal;
+  box-sizing: border-box;
+}
+
+body {
+  
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  text-align: center;
+}
+
+#btnstart {
+  margin-top: 15px;
+  padding: 5px 5px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid ;
+  border-radius: 20% 0 20% 0;
+}
