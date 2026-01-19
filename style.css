@@ -1,28 +1,230 @@
+:root {
+  --bg-start: #0f172a;
+  --bg-waiting: #ce2029;
+  /* Red for wait/stop */
+  --bg-go: #10b981;
+  /* Green for go */
+  --bg-too-soon: #f59e0b;
+  /* Orange/Warning */
+  --bg-result: #3b82f6;
+  /* Blue for info */
+
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.8);
+
+  --font-main: "Outfit", sans-serif;
+
+  --transition-speed: 0.3s;
+}
+
 * {
   margin: 0;
   padding: 0;
-  font-family: "Indie Flower", cursive;
-  font-weight: 600;
-  font-style:normal;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  
+  font-family: var(--font-main);
+  background-color: var(--bg-start);
+  color: var(--text-primary);
   height: 100vh;
+  overflow: hidden;
+  transition: background-color 0s;
+  /* Instant color change is better for reaction tests, but smooth implies "loading" */
+}
+
+/* We want the background change for "GO" to be instant, but others can be smooth. */
+#app {
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.container {
   text-align: center;
+  transition: background-color var(--transition-speed) ease;
+  user-select: none;
+  /* Prevent text selection during fast clicks */
+  cursor: default;
 }
 
-#btnstart {
-  margin-top: 15px;
-  padding: 5px 5px;
-  font-size: 16px;
+#app.clickable {
   cursor: pointer;
-  border: 1px solid ;
-  border-radius: 20% 0 20% 0;
+}
+
+/* State Backgrounds */
+#app.state-start {
+  background-color: var(--bg-start);
+}
+
+#app.state-waiting {
+  background-color: var(--bg-waiting);
+  cursor: progress;
+}
+
+#app.state-go {
+  background-color: var(--bg-go);
+  transition: background-color 0s;
+  /* Instant */
+}
+
+#app.state-too-soon {
+  background-color: var(--bg-too-soon);
+}
+
+#app.state-result {
+  background-color: var(--bg-result);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.icon-display {
+  font-size: 5rem;
+  margin-bottom: 0.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+p {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  max-width: 40ch;
+}
+
+.btn {
+  margin-top: 1rem;
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-family: var(--font-main);
+  color: var(--bg-start);
+  background: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.02em;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Hide button when not needed */
+.hidden {
+  display: none !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Status specific icon animations */
+.state-go .icon-display {
+  animation: none;
+  transform: scale(1.2);
+}
+
+/* Responsiveness */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  .icon-display {
+    font-size: 4rem;
+  }
+}
+
+/* High Score Board */
+.high-score-board {
+  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  width: 100%;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.high-score-board h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+}
+
+.high-score-board ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.high-score-board li {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-family: monospace;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.high-score-board li span {
+  font-weight: bold;
+}
+
+/* Hide high scores during gameplay states */
+.state-waiting .high-score-board,
+.state-go .high-score-board,
+.state-too-soon .high-score-board {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
 }
